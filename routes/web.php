@@ -2,17 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
-Route::get('/', function () {
-    return view('welcome');
+Route::middleware('guest')->group(function () {
+    Route::get('login', [\App\Http\Controllers\LoginController::class, 'index'])->name('login');
+    Route::post('login', [\App\Http\Controllers\LoginController::class, 'authenticate'])->name('authenticate');
+    Route::get('register', [\App\Http\Controllers\LoginController::class, 'register'])->name('auth.register');
+    Route::post('register', [\App\Http\Controllers\LoginController::class, 'doRegister'])->name('auth.register.post');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::resource('posts', \App\Http\Controllers\PostController::class)->parameter('posts', 'post:slug');
+    Route::delete('logout', [\App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
+    Route::get('user/{user:username}', [\App\Http\Controllers\ProfileController::class, 'view'])->name('user.view');
+    Route::get('profile', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+    Route::get('profile/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])->middleware(['password.confirm'])->name('profile.edit');
+    Route::put('profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/confirm-password', function () {
+        return view('auth.confirm-password');
+    })->name('password.confirm');
+    Route::post('/confirm-password', [\App\Http\Controllers\LoginController::class, 'confirmPassword'])->middleware(['throttle:6,1'])->name('password.confirm.post');
+    Route::put('/password', [\App\Http\Controllers\LoginController::class, 'updatePassword'])->middleware(['password.confirm'])->name('password.update');
 });
