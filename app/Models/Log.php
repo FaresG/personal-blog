@@ -6,22 +6,19 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Category extends Model
+class Log extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
-
-    public function posts(): BelongsToMany
+    public function user(): BelongsTo
     {
-        return $this->belongsToMany(Post::class);
+        return $this->belongsTo(User::class);
     }
 
     public function created_at_formatted(): string
     {
         return Carbon::parse($this->created_at)->format('d, M Y');
     }
+
 }

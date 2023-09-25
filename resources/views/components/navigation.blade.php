@@ -1,9 +1,24 @@
 <nav class="h-10 bg-white flex gap-4 items-center justify-between px-3 mb-2">
     <div>
-        <x-link>
-            <x-slot:route>{{route('posts.index')}}</x-slot:route>
-            Posts
-        </x-link>
+        @if(Str::contains(Route::currentRouteName(), 'admin.'))
+            <x-link>
+                <x-slot:route>{{route('admin.dashboard.index')}}</x-slot:route>
+                Dashboard
+            </x-link>
+            <x-link>
+                <x-slot:route>{{route('admin.categories.index')}}</x-slot:route>
+                Categories
+            </x-link>
+            <x-link>
+                <x-slot:route>{{route('admin.logs.index')}}</x-slot:route>
+                Logs
+            </x-link>
+        @else
+            <x-link>
+                <x-slot:route>{{route('posts.index')}}</x-slot:route>
+                Posts
+            </x-link>
+        @endif
     </div>
     <div>
         @guest
@@ -22,7 +37,15 @@
         @endguest
         @auth
             <div class="flex gap-3 items-center">
-                <a href="{{ route('profile.index') }}">Hi {{ Auth::user()->fullname() }}!</a>
+                @if(Gate::allows('show-admin-dashboard'))
+                    @if(Str::contains(Route::currentRouteName(), 'admin.'))
+                        <a href="{{ route('posts.index') }}">Front Office</a>
+                    @else
+                        <a href="{{ route('admin.dashboard.index') }}">Back Office</a>
+                        <a href="{{ route('profile.index') }}">Hi {{ Auth::user()->fullname() }}!</a>
+                    @endif
+
+                @endif
                 <form action="{{ route('logout') }}" method="post" class="mb-0">
                     @csrf
                     @method('delete')

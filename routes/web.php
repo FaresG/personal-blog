@@ -23,3 +23,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/confirm-password', [\App\Http\Controllers\LoginController::class, 'confirmPassword'])->middleware(['throttle:6,1'])->name('password.confirm.post');
     Route::put('/password', [\App\Http\Controllers\LoginController::class, 'updatePassword'])->middleware(['password.confirm'])->name('password.update');
 });
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\admin\DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('logs', [\App\Http\Controllers\admin\LogController::class, 'index'])->name('logs.index');
+    Route::resource('categories', \App\Http\Controllers\admin\CategoryController::class);
+});
+
+Route::get('/', function () {
+    \Illuminate\Support\Facades\Log::info('barra');
+});
+
